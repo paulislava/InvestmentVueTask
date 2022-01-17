@@ -1,7 +1,8 @@
 <template>
   <div class="desk">
     <WindowDraggable
-      v-for="element in windows"
+      v-for="(element, index) in windows"
+      v-model="windows[index]"
       :key="element.id"
       :item="element"
       @update="updateWindow"
@@ -45,7 +46,9 @@ export default {
     windows: {
       get() {
         let windows = this.$store.state.windows;
+        console.log(windows)
         if(!windows.length) {
+            windows = []
             for (let i = 1; i <= windows_count; i++) {
                 const window = { id: i, title: "Window " + i, closed: false };
                 setWindow(window);
@@ -63,28 +66,15 @@ export default {
   },
 
   methods: {
-    updateWindow(data) {
-      const windows = this.windows;
-      windows.every((element) => {
-        if (element.id == data.id) {
-          element.x = data.x;
-          element.y = data.y;
-          element.w = data.w;
-          element.h = data.h;
-          element.closed = data.closed;
-          return false;
-        }
-        return true;
-      });
-      this.windows = windows;
+    updateWindow() {
+      let windows = this.windows
+      this.windows = windows
     },
     returnWindow() {
       let windows = this.windows;
       windows.every((element) => {
         if (element.closed) {
           element.closed = false;
-          setWindow(element);
-          console.log(element);
           return false;
         }
         return true;

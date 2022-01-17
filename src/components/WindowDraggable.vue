@@ -1,13 +1,13 @@
 <template>
   <Vue3DraggableResizable
     class="window"
-    v-if="!closed"
+    v-show="!closed"
     @drag-end="change"
     @resize-end="change"
     v-model:x="x"
-    v-model:h="h"
-    v-model:w="w"
     v-model:y="y"
+    v-model:w="w"
+    v-model:h="h"
   >
     <div class="window-header">
       <a class="close-btn" @click="close">X</a>
@@ -33,59 +33,59 @@ export default {
   },
   data() {
     return {
-      x_new: this.item.x,
-      y_new: this.item.y,
-      w_new: this.item.w,
-      h_new: this.item.h,
-      closed_new: this.item.closed
+      value_new: this.item,
+      x: this.item.x,
+      y: this.item.y,
+      w: this.item.w,
+      h: this.item.h,
+      closed_new: this.item.closed,
     };
   },
   computed: {
-    x: {
-      get() { return this.item.x },
-      set(val) { this.x_new = val },
-    },
-    y: {
-      get() { return this.item.y },
-      set(val) { this.y_new = val },
-    },
-    w: {
-      get() { return this.item.w },
-      set(val) { this.w_new = val },
-    },
-    h: {
-      get() { return this.item.h },
-      set(val) { this.h_new = val },
+    value: {
+      get() {
+        return this.value_new;
+      },
+      set(val) {
+        this.value_new = val;
+        this.$emit("update:modelValue", val);
+        this.$emit("update", val);
+      },
     },
     closed: {
-      get() { return this.item.closed },
-      set(val) { this.closed_new = val }
-    }
-    
+      get() {
+        return this.item.closed;
+      },
+      set(val) {
+        this.closed_new = val;
+      },
+    },
   },
   methods: {
     save() {
-      this.$emit('update', {
+      this.value = {
         id: this.item.id,
-        x: this.x_new,
-        y: this.y_new,
-        w: this.w_new,
-        h: this.h_new,
-        closed: this.closed_new
-      });
+        title: this.item.title,
+        x: this.x,
+        y: this.y,
+        w: this.w,
+        h: this.h,
+        closed: this.closed_new,
+      };
     },
     change() {
-      this.x = grid_size(this.x_new)
-      this.y = grid_size(this.y_new)
-      this.w = grid_size(this.w_new)
-      this.h = grid_size(this.h_new)
-      this.closed = false
+      this.x = grid_size(this.x);
+      this.y = grid_size(this.y);
+      this.w = grid_size(this.w);
+      this.h = grid_size(this.h);
+      this.closed = false;
 
       this.save();
     },
     close() {
       this.closed = true;
       setWindow(this);
+      console.log(this);
       this.save();
     },
   },
@@ -102,9 +102,11 @@ export default {
   min-width: 150px;
   min-height: 70px;
 }
+
 .window.closed {
-  background: red;
+  display: none;
 }
+
 .window-header {
   position: relative;
   font-weight: bold;
